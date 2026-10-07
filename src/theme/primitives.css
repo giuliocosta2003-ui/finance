@@ -1,0 +1,145 @@
+/* src/theme/primitives.css
+   Le SCALE grezze del design system: misure, tipografia, movimento, geometria.
+   Niente colori qui — i colori sono l'unica cosa che cambia fra tema chiaro e
+   scuro, e stanno in tokens.css.
+
+   La divisione serve a una cosa sola: qui dentro non c'e' niente da ri-decidere
+   quando si cambia tema o marchio. Un raggio di 2 px e' 2 px in chiaro, in
+   scuro e in qualsiasi rebranding futuro. */
+
+:root {
+  /* ── tipografia ─────────────────────────────────────────────────────────── */
+
+  /* Inter: grottesca neutra, la famiglia piu' vicina alle facce che le banche
+     usano da sempre (Univers e derivate) fra quelle con licenza aperta. La
+     variante variabile e' un file solo per tutti i pesi, self-hosted: nessuna
+     chiamata a un CDN di terzi da un'app di finanza personale.
+
+     `cv05` sostituisce la "l" con la versione con la coda: in una lista di
+     importi e codici valuta, "Il" e "1l" devono restare distinguibili. */
+  --font-sans: "Inter Variable", -apple-system, BlinkMacSystemFont,
+               "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+
+  /* Scala compatta. Una banca mostra molte righe per schermata: il corpo sta a
+     14 px, non a 16, e la gerarchia la fanno peso e colore piu' che la taglia. */
+  --fs-display:  32px;
+  --fs-h1:       24px;
+  --fs-h2:       18px;
+  --fs-h3:       16px;
+  --fs-body:     14px;
+  --fs-body-sm:  13px;
+  --fs-caption:  12px;
+  --fs-micro:    11px;
+
+  /* Gli importi hanno una scala PROPRIA, separata dal testo: un saldo e una
+     intestazione non devono cambiare insieme quando si ritocca la tipografia. */
+  --fs-amount-hero: 32px;
+  --fs-amount-lg:   20px;
+  --fs-amount:      15px;
+  --fs-amount-sm:   13px;
+
+  --lh-display: 1.15;
+  --lh-tight:   1.25;
+  --lh-normal:  1.45;
+  --lh-relaxed: 1.6;
+
+  /* Tre pesi, non quattro. Il 700 resta solo per il numero grande: in una
+     interfaccia istituzionale il grassetto ovunque legge come un volantino. */
+  --fw-regular:  400;
+  --fw-medium:   500;
+  --fw-semibold: 600;
+  --fw-bold:     700;
+
+  /* Inter ha gia' una spaziatura stretta: -0.02em la chiuderebbe troppo. */
+  --tracking-tight:  -0.01em;
+  --tracking-normal:  0;
+  --tracking-wide:    0.06em;
+
+  /* ── griglia da 4 px ────────────────────────────────────────────────────── */
+
+  --space-0-5:  2px;
+  --space-1:    4px;
+  --space-2:    8px;
+  --space-3:   12px;
+  --space-4:   16px;
+  --space-5:   20px;
+  --space-6:   24px;
+  --space-8:   32px;
+  --space-10:  40px;
+  --space-12:  48px;
+  --space-16:  64px;
+
+  /* ── raggi ──────────────────────────────────────────────────────────────── */
+  /* Contenuti: il raggio grande e' la firma del software gestionale moderno, ed
+     e' esattamente cio' che qui NON si vuole. Un bordo netto comunica un
+     registro, non un'app di intrattenimento. */
+
+  --radius-none:     0;
+  --radius-control:  2px;   /* pulsanti, campi, caselle, chip */
+  --radius-card:     4px;   /* card, tabelle, pannelli */
+  --radius-overlay:  8px;   /* solo cio' che galleggia davvero: fogli, modali */
+  --radius-pill:   999px;   /* SOLO avatar e pastiglie di stato circolari */
+
+  /* ── bordi ──────────────────────────────────────────────────────────────── */
+  /* Un pixel. Dove serve piu' peso si cambia il COLORE del bordo, non lo
+     spessore: un bordo da 2 px accanto a uno da 1 px sembra un errore. */
+
+  --bw:        1px;
+  --bw-accent: 3px;  /* la barra dello stato attivo in navigazione */
+
+  /* ── geometria dei controlli ────────────────────────────────────────────── */
+  /* 40 px invece di 44: la densita' e' una richiesta del brief. Resta sopra i
+     minimi di tocco perche' su mobile l'area cliccabile la allarga il padding
+     della riga, non l'altezza del controllo. */
+
+  --control-h:     40px;
+  --control-h-sm:  32px;
+  --control-h-lg:  48px;
+  --row-h:         48px;
+  --row-h-sm:      40px;
+
+  /* ── guscio ─────────────────────────────────────────────────────────────── */
+
+  --header-h:      56px;
+  --nav-h:         60px;
+  --sidebar-w:    240px;
+  --sidebar-w-sm:  64px;
+  --content-max: 1280px;
+  --panel-w:      440px;
+
+  /* ── movimento ──────────────────────────────────────────────────────────── */
+  /* Breve e senza rimbalzi. Una curva elastica su un saldo bancario sembra un
+     gioco; qui si usa un'attenuazione standard e si finisce in fretta. */
+
+  --dur-fast:  120ms;
+  --dur:       160ms;
+  --dur-slow:  200ms;
+  --ease-out:    cubic-bezier(.2, 0, .2, 1);
+  --ease-in-out: cubic-bezier(.4, 0, .2, 1);
+
+  /* ── impilamento ────────────────────────────────────────────────────────── */
+
+  --z-sticky:  10;
+  --z-panel:   40;
+  --z-overlay: 50;
+  --z-toast:   60;
+}
+
+/* Su schermo stretto le due taglie piu' grandi scendono: 32 px di saldo su
+   390 px di larghezza mangiano la riga appena l'importo supera le sei cifre. */
+@media (max-width: 767px) {
+  :root {
+    --fs-display:      26px;
+    --fs-h1:           20px;
+    --fs-amount-hero:  28px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 0ms;
+    --dur:      0ms;
+    --dur-slow: 0ms;
+  }
+}

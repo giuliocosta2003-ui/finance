@@ -1,0 +1,6 @@
+# SPA fallback: React Router usa percorsi lato client (BrowserRouter), quindi
+# ricaricare o aprire un link profondo (es. /taxes/period/123) deve restituire
+# index.html, non un 404. Cloudflare Pages serve prima i file statici che
+# esistono (asset con hash, sw.js, icone) e applica questa regola solo ai
+# percorsi che non corrispondono a un file: gli asset non vengono toccati.
+/*    /index.html    200

@@ -1,0 +1,97 @@
+/* src/index.css
+   Reset e stili di base. Tutti i colori e le misure arrivano dai token del
+   design system: qui non compare nessun valore letterale, tranne quelli che
+   un reset deve per forza scrivere (0, 100%, 1px). */
+
+/* Il font e' self-hosted: nessuna chiamata a un CDN di terzi, e nessun nome di
+   dominio esterno che riveli quando e da dove si apre un'app di finanza
+   personale. E' variabile, quindi un file solo copre tutti i pesi. */
+@import "@fontsource-variable/inter";
+@import "./theme/primitives.css";
+@import "./theme/tokens.css";
+@import "./ui/ui.css";
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  /* Nessuno scroll orizzontale della pagina, a nessuna larghezza: le tabelle
+     larghe scorrono dentro il proprio contenitore, non trascinando tutto. */
+  overflow-x: clip;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  line-height: var(--lh-normal);
+  background: var(--surface-bg);
+  color: var(--text);
+  overflow-x: clip;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* `cv05` da' alla "l" la versione con la coda. In una colonna di descrizioni
+     e codici valuta, "Il" e "1l" devono restare due cose diverse. */
+  font-feature-settings: "cv05" 1;
+}
+
+input, select, textarea, button { font-family: inherit; font-size: inherit; }
+
+/* Gli importi: cifre a larghezza fissa, cosi' le colonne non ballano quando
+   un 1 diventa un 8. E' la regola numero uno del design system. */
+.num,
+input[inputmode="decimal"],
+input[type="number"],
+table {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1, "cv05" 1;
+}
+
+/* ── focus ─────────────────────────────────────────────────────────────────── */
+/* Solo :focus-visible, cosi' l'anello compare a chi naviga da tastiera e non a
+   ogni clic del mouse. Senza, la navigazione da tastiera su desktop diventa
+   indovinare dove si e'. L'anello e' neutro, non rosso: il rosso in questa
+   interfaccia vuol dire errore. */
+:focus { outline: none; }
+
+:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+  border-radius: var(--radius-control);
+}
+
+/* ── scrollbar ─────────────────────────────────────────────────────────────── */
+
+* { scrollbar-width: thin; scrollbar-color: var(--border-strong) transparent; }
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+::-webkit-scrollbar-thumb:hover { background-clip: content-box; background-color: var(--text-tertiary); }
+
+/* ── movimento ─────────────────────────────────────────────────────────────── */
+/* Nessuna curva elastica e nessun rimbalzo: le transizioni entrano dritte e
+   finiscono in fretta. Su un saldo bancario un'animazione che rimbalza sembra
+   un gioco. */
+
+@keyframes fin-spin { to { transform: rotate(360deg); } }
+@keyframes fin-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fin-rise { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+@keyframes fin-slide-up { from { transform: translateY(100%); } to { transform: none; } }
+@keyframes fin-slide-left { from { transform: translateX(100%); } to { transform: none; } }
+@keyframes fin-overlay-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fin-shimmer { to { background-position: 200% 0; } }
+
+.fin-fade-in { animation: fin-fade-in var(--dur) var(--ease-out) both; }
+
+/* `prefers-reduced-motion` azzera gia' le durate nei token; qui si tolgono
+   anche le animazioni che non le usano. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+}

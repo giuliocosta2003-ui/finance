@@ -1,0 +1,1401 @@
+/* src/ui/ui.css
+   Gli stili della libreria di componenti.
+
+   Perche' un foglio di stile vero e non gli oggetti inline usati finora: gli
+   stili inline non sanno fare `:hover`, `:focus-visible`, `:disabled`,
+   `@media` ne' keyframes. Un redesign che ha il desktop come vero bersaglio
+   senza stati di hover non e' un redesign. I valori dinamici (una larghezza
+   calcolata, un colore di categoria) restano inline; tutto il resto sta qui.
+
+   Il registro e' quello di una banca, e si regge su quattro regole che
+   tornano in ogni blocco qui sotto:
+
+     — i raggi sono minimi (2 px sui controlli, 4 px sui contenitori);
+     — a separare sono i BORDI, non le ombre;
+     — lo stato attivo e' una barra piena di colore, non una pastiglia;
+     — le colonne di numeri sono allineate a destra e tabulari, sempre.
+
+   Ogni classe comincia con `fin-` per non collidere con niente. */
+
+/* ── Amount ────────────────────────────────────────────────────────────────── */
+
+.fin-amount {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+  white-space: nowrap;
+  font-size: var(--fs-amount);
+  font-weight: var(--fw-medium);
+  letter-spacing: var(--tracking-normal);
+  /* I numeri non si spezzano mai e non si allineano mai a sinistra quando
+     stanno in colonna: e' cio' che rende una tabella finanziaria leggibile. */
+  font-variant-ligatures: none;
+}
+
+.fin-amount--hero {
+  font-size: var(--fs-amount-hero);
+  line-height: var(--lh-display);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--tracking-tight);
+  display: inline-flex;
+  align-items: baseline;
+}
+.fin-amount--lg { font-size: var(--fs-amount-lg); font-weight: var(--fw-semibold); }
+.fin-amount--sm { font-size: var(--fs-amount-sm); }
+
+/* I centesimi piu' piccoli e piu' chiari: chi guarda un saldo legge gli euro,
+   non i centesimi, e la gerarchia deve dirlo. */
+.fin-amount--hero .fin-amount__tail { font-size: .5em; font-weight: var(--fw-semibold); }
+.fin-amount__tail { color: var(--text-secondary); }
+.fin-amount__rest { color: var(--text-secondary); }
+.fin-amount--hero .fin-amount__rest { font-size: .5em; font-weight: var(--fw-semibold); margin-left: .16em; }
+
+.fin-amount--in  { color: var(--positive); }
+.fin-amount--out { color: var(--negative); }
+.fin-amount--neutral { color: var(--text); }
+.fin-amount--muted { color: var(--text-secondary); }
+
+/* ── Button ────────────────────────────────────────────────────────────────── */
+/* Gerarchia a tre livelli e niente di piu': primario pieno, secondario con
+   bordo, terziario solo testo. Il raggio e' 2 px — un pulsante a pillola in
+   un'app di soldi legge come un giocattolo. */
+
+.fin-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  border: var(--bw) solid transparent;
+  border-radius: var(--radius-control);
+  padding: 0 var(--space-4);
+  height: var(--control-h);
+  font-size: var(--fs-body);
+  font-weight: var(--fw-semibold);
+  line-height: 1;
+  cursor: pointer;
+  white-space: nowrap;
+  /* Serve anche ai <Link> travestiti da pulsante: un pulsante sottolineato
+     sembra un link rotto. */
+  text-decoration: none;
+  transition: background-color var(--dur-fast) var(--ease-out),
+              border-color var(--dur-fast) var(--ease-out),
+              color var(--dur-fast) var(--ease-out);
+}
+/* Nessun `transform: scale` alla pressione: il micro-rimbalzo e' la firma
+   delle app di consumo. Qui il feedback e' un cambio di tono, e basta. */
+.fin-btn:disabled { opacity: .4; cursor: not-allowed; }
+
+.fin-btn--sm { height: var(--control-h-sm); padding: 0 var(--space-3); font-size: var(--fs-body-sm); }
+.fin-btn--lg { height: var(--control-h-lg); padding: 0 var(--space-6); }
+.fin-btn--block { width: 100%; }
+
+.fin-btn--primary {
+  background: var(--accent-fill);
+  color: var(--text-on-fill);
+  border-color: var(--accent-fill);
+}
+.fin-btn--primary:hover:not(:disabled) {
+  background: var(--accent-fill-hover);
+  border-color: var(--accent-fill-hover);
+}
+
+.fin-btn--secondary {
+  background: var(--surface-1);
+  color: var(--text);
+  border-color: var(--border-control);
+}
+.fin-btn--secondary:hover:not(:disabled) { background: var(--surface-hover); border-color: var(--text); }
+
+/* `ghost` e' il nome storico del terziario: restano validi entrambi. */
+.fin-btn--ghost, .fin-btn--tertiary {
+  background: transparent;
+  color: var(--accent);
+  padding: 0 var(--space-2);
+}
+.fin-btn--ghost:hover:not(:disabled), .fin-btn--tertiary:hover:not(:disabled) {
+  background: var(--accent-soft);
+  color: var(--accent-fill-hover);
+}
+[data-theme="dark"] .fin-btn--ghost:hover:not(:disabled),
+[data-theme="dark"] .fin-btn--tertiary:hover:not(:disabled) { color: var(--accent); }
+
+/* Il terziario NEUTRO: per le azioni che non sono l'azione principale della
+   schermata (chiudi, annulla, cambia vista). */
+.fin-btn--quiet { background: transparent; color: var(--text-secondary); }
+.fin-btn--quiet:hover:not(:disabled) { background: var(--surface-hover); color: var(--text); }
+
+.fin-btn--danger { background: transparent; color: var(--negative); border-color: var(--negative); }
+.fin-btn--danger:hover:not(:disabled) { background: var(--negative-soft); }
+
+.fin-btn--icon { width: var(--control-h); padding: 0; }
+.fin-btn--icon.fin-btn--sm { width: var(--control-h-sm); }
+
+/* ── IconButton ────────────────────────────────────────────────────────────── */
+/* Era ripetuto a mano in sei schermate, ogni volta con misure diverse. */
+
+.fin-iconbtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: var(--control-h-sm);
+  height: var(--control-h-sm);
+  padding: 0;
+  border: var(--bw) solid var(--border);
+  border-radius: var(--radius-control);
+  background: var(--surface-1);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background-color var(--dur-fast) var(--ease-out),
+              border-color var(--dur-fast) var(--ease-out),
+              color var(--dur-fast) var(--ease-out);
+}
+.fin-iconbtn:hover:not(:disabled) { background: var(--surface-hover); border-color: var(--border-strong); color: var(--text); }
+.fin-iconbtn:disabled { opacity: .4; cursor: not-allowed; }
+.fin-iconbtn--bare { border-color: transparent; background: transparent; }
+.fin-iconbtn--bare:hover:not(:disabled) { border-color: transparent; background: var(--surface-hover); }
+.fin-iconbtn--danger:hover:not(:disabled) { color: var(--negative); border-color: var(--negative); background: var(--negative-soft); }
+.fin-iconbtn--lg { width: var(--control-h); height: var(--control-h); }
+
+/* ── QuickAction ───────────────────────────────────────────────────────────── */
+/* Riquadri, non cerchi. Un cerchio colorato in fila con altri cerchi e' il
+   linguaggio delle app di pagamenti; un riquadro bordato e' quello di un
+   pannello operativo. */
+
+.fin-quick {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  min-width: 132px;
+  min-height: 84px;
+  padding: var(--space-3);
+  border: var(--bw) solid var(--border);
+  border-radius: var(--radius-card);
+  background: var(--surface-1);
+  cursor: pointer;
+  color: var(--text);
+  font-size: var(--fs-body-sm);
+  font-weight: var(--fw-semibold);
+  text-align: left;
+  text-decoration: none;
+  transition: background-color var(--dur-fast) var(--ease-out),
+              border-color var(--dur-fast) var(--ease-out);
+}
+.fin-quick:hover { background: var(--surface-hover); border-color: var(--border-strong); }
+.fin-quick__circle {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  color: var(--accent);
+}
+/* L'azione principale della fila si distingue con una barra rossa in alto,
+   non riempiendola di colore: quattro riquadri di cui uno pieno sbilancerebbe
+   la fila, e il rosso pieno qui e' riservato ai pulsanti veri. */
+.fin-quick--accent { border-top: var(--bw-accent) solid var(--accent-fill); }
+
+/* ── Card ──────────────────────────────────────────────────────────────────── */
+
+.fin-card {
+  background: var(--surface-1);
+  border: var(--bw) solid var(--border);
+  border-radius: var(--radius-card);
+  padding: var(--space-4);
+  box-shadow: var(--shadow-card);
+}
+.fin-card--raised { background: var(--surface-2); }
+.fin-card--flush { padding: 0; overflow: hidden; }
+.fin-card--interactive {
+  cursor: pointer;
+  transition: border-color var(--dur-fast) var(--ease-out),
+              background-color var(--dur-fast) var(--ease-out);
+}
+.fin-card--interactive:hover { border-color: var(--border-strong); background: var(--surface-2); }
+
+/* Intestazione di card: titolo a sinistra, azioni a destra, filo di
+   separazione sotto. E' la forma che ricorre in tutta l'app. */
+.fin-card__head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: var(--bw) solid var(--border);
+  min-height: var(--control-h-lg);
+}
+/* Le azioni vanno a destra, il titolo NO. Senza `:not(:first-child)` una
+   intestazione col solo titolo se lo ritrovava spinto a destra, perche' il
+   titolo era anche l'ultimo figlio. */
+.fin-card__head > :last-child:not(:first-child) { margin-left: auto; }
+.fin-card__body { padding: var(--space-4); }
+.fin-card__foot {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-top: var(--bw) solid var(--border);
+}
+
+.fin-card__title {
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+/* ── Avatar ────────────────────────────────────────────────────────────────── */
+/* Resta circolare: e' un segno d'identita', non un contenitore di dati, ed e'
+   l'unico punto dove il cerchio ha un motivo. */
+
+.fin-avatar {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-pill);
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0;
+  color: var(--text-on-cat);
+  user-select: none;
+}
+.fin-avatar--sm { width: 28px; height: 28px; font-size: var(--fs-micro); }
+.fin-avatar--md { width: 36px; height: 36px; font-size: var(--fs-caption); }
+.fin-avatar--lg { width: 56px; height: 56px; font-size: var(--fs-h2); }
+/* Quando dentro c'e' un'icona invece delle iniziali serve il quadrato: le
+   icone di sistema non stanno bene in un cerchio colorato. */
+.fin-avatar--square { border-radius: var(--radius-control); }
+
+/* ── ListRow ───────────────────────────────────────────────────────────────── */
+
+.fin-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  min-height: var(--row-h);
+  padding: var(--space-2) var(--space-4);
+  background: none;
+  border: none;
+  border-bottom: var(--bw) solid var(--border);
+  border-radius: 0;
+  text-align: left;
+  text-decoration: none;
+  color: inherit;
+  font: inherit;
+  transition: background-color var(--dur-fast) var(--ease-out);
+}
+/* L'ultima riga di un elenco non porta il filo: sotto c'e' gia' il bordo del
+   contenitore, e due linee a un pixel di distanza si vedono. */
+.fin-row:last-child { border-bottom: none; }
+/* Riga bassa: per gli elenchi tecnici (prezzi, lotti) dove non c'e' un
+   avatar e la riga da 48 px sprecherebbe spazio. */
+.fin-row--sm { min-height: var(--row-h-sm); gap: var(--space-2); }
+.fin-row--interactive { cursor: pointer; }
+.fin-row--interactive:hover { background: var(--surface-hover); }
+/* La riga selezionata si marca con una barra rossa a sinistra, non con uno
+   sfondo colorato: lo sfondo su una riga di importi ne falsa la lettura. */
+.fin-row--selected { background: var(--accent-soft); box-shadow: inset var(--bw-accent) 0 0 var(--accent-fill); }
+
+.fin-row__body { min-width: 0; flex: 1; display: block; }
+.fin-row__title {
+  display: block;
+  font-size: var(--fs-body);
+  font-weight: var(--fw-medium);
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.fin-row__subtitle {
+  display: block;
+  font-size: var(--fs-caption);
+  color: var(--text-secondary);
+  margin-top: 1px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.fin-row__end {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1px;
+  flex: 0 0 auto;
+  text-align: right;
+}
+
+/* Intestazione di un gruppo di righe ("Oggi", "Ieri", una data). */
+.fin-row-group {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+  padding: var(--space-2) var(--space-4);
+  background: var(--surface-sunken);
+  border-bottom: var(--bw) solid var(--border);
+  font-size: var(--fs-micro);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+/* ── riga di gruppo (revisione per commerciante) ───────────────────────────── */
+/* Ha piu' roba di una riga normale: avatar, nome, pastiglie, periodo, totale,
+   una tendina e due pulsanti. In fila su 390 px non ci sta — il nome sparisce
+   e la tendina esce dallo schermo — quindi sotto i 700 px si impila su tre
+   fasce invece di stringere tutto. */
+
+.fin-group {
+  display: grid;
+  gap: var(--space-2) var(--space-3);
+  align-items: center;
+  padding: var(--space-3) var(--space-4);
+  border-bottom: var(--bw) solid var(--border);
+  grid-template-areas:
+    "avatar testa"
+    "avatar cifre"
+    "azioni azioni";
+  grid-template-columns: auto minmax(0, 1fr);
+}
+.fin-group__avatar  { grid-area: avatar; align-self: start; }
+.fin-group__head    { grid-area: testa; min-width: 0; }
+.fin-group__figures { grid-area: cifre; display: flex; align-items: baseline; gap: var(--space-3); flex-wrap: wrap; }
+.fin-group__actions { grid-area: azioni; display: flex; align-items: center; gap: var(--space-2); }
+.fin-group__actions select { flex: 1; min-width: 0; }
+
+.fin-group__name {
+  display: block;
+  font-size: var(--fs-body);
+  font-weight: var(--fw-medium);
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.fin-group__tags { display: flex; gap: var(--space-2); flex-wrap: wrap; margin-top: var(--space-1); }
+
+@media (min-width: 700px) {
+  /* Su schermo largo torna tutto su una riga sola, come le altre. */
+  .fin-group {
+    grid-template-areas: "avatar testa cifre azioni";
+    grid-template-columns: auto minmax(0, 1fr) auto auto;
+  }
+  .fin-group__figures { justify-content: flex-end; }
+  .fin-group__actions select { flex: 0 0 auto; width: auto; max-width: 200px; }
+}
+
+/* Le singole righe dentro un gruppo aperto. */
+.fin-group__row {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4) var(--space-2) var(--space-10);
+  background: var(--surface-2);
+  border-bottom: var(--bw) solid var(--border);
+  flex-wrap: wrap;
+}
+.fin-group__row > :last-child { margin-left: auto; }
+
+/* ── Chip ──────────────────────────────────────────────────────────────────── */
+
+.fin-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  height: var(--control-h-sm);
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-control);
+  border: var(--bw) solid var(--border-control);
+  background: var(--surface-1);
+  color: var(--text-secondary);
+  font-size: var(--fs-body-sm);
+  font-weight: var(--fw-medium);
+  white-space: nowrap;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background-color var(--dur-fast) var(--ease-out),
+              border-color var(--dur-fast) var(--ease-out),
+              color var(--dur-fast) var(--ease-out);
+}
+.fin-chip:hover { border-color: var(--text); color: var(--text); }
+/* Il filtro attivo e' pieno e scuro, non rosso: in una barra di filtri il
+   rosso del marchio chiamerebbe piu' attenzione del contenuto filtrato. */
+.fin-chip--on {
+  background: var(--surface-inverse);
+  border-color: var(--surface-inverse);
+  color: var(--text-inverse);
+  font-weight: var(--fw-semibold);
+}
+.fin-chip--on:hover { background: var(--text); border-color: var(--text); color: var(--text-inverse); }
+.fin-chip--static { cursor: default; }
+.fin-chip--static:hover { border-color: var(--border-control); color: var(--text-secondary); }
+.fin-chip__count { color: inherit; opacity: .75; font-variant-numeric: tabular-nums; }
+
+/* ── Badge ─────────────────────────────────────────────────────────────────── */
+/* La pastiglia di stato, prima ricopiata a mano in otto file. `tone` arriva
+   inline come colore; la variante piena aggiunge lo sfondo tenue. */
+
+.fin-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-control);
+  border: var(--bw) solid currentColor;
+  font-size: var(--fs-micro);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  white-space: nowrap;
+  line-height: 1.5;
+}
+/* `fin-tag` e' il nome storico: resta valido finche' le schermate migrano. */
+.fin-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-control);
+  border: var(--bw) solid currentColor;
+  font-size: var(--fs-micro);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  white-space: nowrap;
+  line-height: 1.5;
+}
+
+/* ── ChoiceRow ─────────────────────────────────────────────────────────────── */
+/* La riga selezionabile. Da selezionata prende la stessa barra rossa a
+   sinistra delle voci di navigazione: un segnale solo, ovunque. */
+
+.fin-choice {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  border: var(--bw) solid var(--border-control);
+  border-left: var(--bw-accent) solid var(--border-control);
+  border-radius: var(--radius-control);
+  background: var(--surface-1);
+  color: var(--text);
+  font: inherit;
+  font-size: var(--fs-body);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color var(--dur-fast) var(--ease-out),
+              background-color var(--dur-fast) var(--ease-out);
+}
+.fin-choice:hover { border-color: var(--text); background: var(--surface-hover); }
+.fin-choice--on {
+  border-color: var(--text);
+  border-left-color: var(--accent-fill);
+  background: var(--accent-soft);
+  font-weight: var(--fw-semibold);
+}
+.fin-choice--on:hover { background: var(--accent-soft); }
+
+/* ── SegmentedControl ──────────────────────────────────────────────────────── */
+
+.fin-segmented {
+  display: inline-flex;
+  border-radius: var(--radius-control);
+  background: var(--surface-1);
+  border: var(--bw) solid var(--border-control);
+  overflow: hidden;
+}
+.fin-segmented__item {
+  border: none;
+  border-left: var(--bw) solid var(--border);
+  background: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: var(--fs-body-sm);
+  font-weight: var(--fw-medium);
+  color: var(--text-secondary);
+  padding: 0 var(--space-3);
+  height: calc(var(--control-h-sm) - 2px);
+  white-space: nowrap;
+  transition: background-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+}
+.fin-segmented__item:first-child { border-left: none; }
+.fin-segmented__item:hover { background: var(--surface-hover); color: var(--text); }
+.fin-segmented__item--on {
+  background: var(--surface-inverse);
+  color: var(--text-inverse);
+  font-weight: var(--fw-semibold);
+}
+.fin-segmented__item--on:hover { background: var(--surface-inverse); color: var(--text-inverse); }
+
+/* ── Tabs ──────────────────────────────────────────────────────────────────── */
+/* Sottolineatura rossa piena sulla scheda attiva: e' la firma di navigazione
+   piu' riconoscibile di un sito bancario. */
+
+.fin-tabs {
+  display: flex;
+  gap: var(--space-6);
+  border-bottom: var(--bw) solid var(--border);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.fin-tabs::-webkit-scrollbar { display: none; }
+.fin-tab {
+  position: relative;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: var(--fs-body);
+  font-weight: var(--fw-medium);
+  color: var(--text-secondary);
+  padding: var(--space-3) 0;
+  white-space: nowrap;
+  transition: color var(--dur-fast) var(--ease-out);
+}
+.fin-tab:hover { color: var(--text); }
+.fin-tab--on { color: var(--text); font-weight: var(--fw-semibold); }
+.fin-tab--on::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: -1px;
+  height: var(--bw-accent);
+  background: var(--accent-fill);
+}
+
+/* ── SearchField ───────────────────────────────────────────────────────────── */
+
+.fin-search {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: var(--control-h);
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-control);
+  background: var(--surface-1);
+  border: var(--bw) solid var(--border-control);
+  color: var(--text-secondary);
+  font-size: var(--fs-body);
+  transition: border-color var(--dur-fast) var(--ease-out);
+}
+.fin-search:hover { border-color: var(--text); }
+.fin-search:focus-within { border-color: var(--text); box-shadow: inset 0 0 0 1px var(--text); }
+.fin-search input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: none;
+  color: var(--text);
+  outline: none;
+  font-size: var(--fs-body);
+}
+.fin-search input::placeholder { color: var(--text-tertiary); }
+/* Stesso motivo: l'anello e' quello del contenitore, non del campo dentro. */
+.fin-search input:focus-visible { outline: none; }
+.fin-search kbd {
+  font-family: inherit;
+  font-size: var(--fs-micro);
+  font-weight: var(--fw-medium);
+  color: var(--text-secondary);
+  border: var(--bw) solid var(--border-strong);
+  border-radius: var(--radius-control);
+  padding: 1px var(--space-1);
+}
+
+/* ── campi ─────────────────────────────────────────────────────────────────── */
+
+.fin-field { display: grid; gap: var(--space-1); }
+.fin-label {
+  font-size: var(--fs-body-sm);
+  font-weight: var(--fw-medium);
+  color: var(--text-secondary);
+}
+.fin-input, .fin-select, .fin-textarea {
+  width: 100%;
+  height: var(--control-h);
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-control);
+  border: var(--bw) solid var(--border-control);
+  background: var(--surface-1);
+  color: var(--text);
+  font-size: var(--fs-body);
+  transition: border-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
+}
+.fin-textarea { height: auto; min-height: 96px; padding: var(--space-2) var(--space-3); line-height: var(--lh-normal); resize: vertical; }
+.fin-select { cursor: pointer; }
+.fin-input:hover:not(:disabled), .fin-select:hover:not(:disabled), .fin-textarea:hover:not(:disabled) { border-color: var(--text); }
+/* Il campo a fuoco si ispessisce con un'ombra interna invece che col bordo:
+   cambiare lo spessore del bordo farebbe saltare il testo di un pixel. */
+.fin-input:focus, .fin-select:focus, .fin-textarea:focus {
+  border-color: var(--text);
+  box-shadow: inset 0 0 0 1px var(--text);
+}
+/* I campi hanno gia' il loro anello (l'ombra interna qui sopra): l'anello
+   globale di :focus-visible si sommerebbe, e si vedrebbero DUE contorni
+   concentrici. Qui si toglie quello globale e resta il loro, che per un campo
+   deve comparire anche col mouse — non solo da tastiera, come per il resto. */
+.fin-input:focus-visible,
+.fin-select:focus-visible,
+.fin-textarea:focus-visible { outline: none; }
+
+.fin-input:disabled, .fin-select:disabled, .fin-textarea:disabled {
+  background: var(--surface-sunken);
+  color: var(--text-secondary);
+  cursor: not-allowed;
+}
+.fin-input::placeholder, .fin-textarea::placeholder { color: var(--text-tertiary); }
+/* Il campo in errore: bordo rosso E messaggio scritto sotto. Mai solo il
+   colore, che per chi non lo distingue non dice niente. */
+.fin-input[aria-invalid="true"], .fin-select[aria-invalid="true"], .fin-textarea[aria-invalid="true"] {
+  border-color: var(--negative);
+  box-shadow: inset 0 0 0 1px var(--negative);
+}
+.fin-hint { font-size: var(--fs-caption); color: var(--text-secondary); line-height: var(--lh-normal); }
+.fin-error {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-1);
+  font-size: var(--fs-caption);
+  color: var(--negative);
+  font-weight: var(--fw-medium);
+}
+
+/* Casella e radio nativi, ricolorati col rosso del marchio. */
+.fin-check {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--accent-fill);
+  cursor: pointer;
+  flex: 0 0 auto;
+}
+.fin-checkline {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--fs-body);
+  color: var(--text);
+  cursor: pointer;
+}
+
+/* Interruttore: rettangolo, non pillola tonda. */
+.fin-switch {
+  position: relative;
+  flex: 0 0 auto;
+  width: 40px;
+  height: 22px;
+  border-radius: var(--radius-control);
+  border: var(--bw) solid var(--border-control);
+  background: var(--surface-sunken);
+  cursor: pointer;
+  padding: 0;
+  transition: background-color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
+}
+.fin-switch::after {
+  content: "";
+  position: absolute;
+  top: 2px; left: 2px;
+  width: 14px; height: 14px;
+  border-radius: 1px;
+  background: var(--text-secondary);
+  transition: transform var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out);
+}
+.fin-switch[aria-checked="true"] { background: var(--accent-fill); border-color: var(--accent-fill); }
+.fin-switch[aria-checked="true"]::after { transform: translateX(18px); background: var(--text-on-fill); }
+.fin-switch:disabled { opacity: .4; cursor: not-allowed; }
+
+/* ── avvisi in linea ───────────────────────────────────────────────────────── */
+/* Il messaggio dentro la pagina: banda di colore a sinistra, fondo tenue,
+   icona sempre presente. Prima era un <p> rosso ricopiato in dodici file. */
+
+.fin-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border: var(--bw) solid var(--border);
+  border-left: var(--bw-accent) solid var(--text-secondary);
+  border-radius: var(--radius-control);
+  background: var(--surface-2);
+  font-size: var(--fs-body-sm);
+  color: var(--text);
+  line-height: var(--lh-normal);
+}
+.fin-alert__icon { flex: 0 0 auto; margin-top: 1px; color: var(--text-secondary); }
+.fin-alert__body { min-width: 0; flex: 1; }
+.fin-alert__title { font-weight: var(--fw-semibold); }
+.fin-alert--error   { border-left-color: var(--negative); background: var(--negative-soft); }
+.fin-alert--error   .fin-alert__icon { color: var(--negative); }
+.fin-alert--warning { border-left-color: var(--warning); background: var(--warning-soft); }
+.fin-alert--warning .fin-alert__icon { color: var(--warning); }
+.fin-alert--success { border-left-color: var(--positive); background: var(--positive-soft); }
+.fin-alert--success .fin-alert__icon { color: var(--positive); }
+.fin-alert--info    { border-left-color: var(--info); background: var(--info-soft); }
+.fin-alert--info    .fin-alert__icon { color: var(--info); }
+
+/* ── Sheet: bottom sheet su mobile, pannello laterale su desktop ───────────── */
+
+.fin-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-overlay);
+  background: var(--overlay);
+  animation: fin-overlay-in var(--dur-fast) var(--ease-out) both;
+}
+.fin-sheet {
+  position: fixed;
+  z-index: calc(var(--z-overlay) + 1);
+  background: var(--surface-1);
+  display: flex;
+  flex-direction: column;
+  max-height: 100%;
+}
+/* Mobile: sale dal basso e lascia spazio alla safe area del telefono. */
+.fin-sheet {
+  left: 0; right: 0; bottom: 0;
+  border-top: var(--bw) solid var(--border);
+  border-radius: var(--radius-overlay) var(--radius-overlay) 0 0;
+  max-height: 92dvh;
+  padding-bottom: env(safe-area-inset-bottom);
+  animation: fin-slide-up var(--dur) var(--ease-out) both;
+}
+.fin-sheet__grabber {
+  width: 32px; height: 3px;
+  border-radius: var(--radius-pill);
+  background: var(--border-strong);
+  margin: var(--space-2) auto 0;
+}
+/* Desktop: diventa un pannello a destra, cosi' l'elenco sotto resta visibile
+   e non si perde il contesto aprendo un dettaglio. Angoli vivi: un pannello
+   ancorato al bordo dello schermo con gli angoli tondi sembra staccato. */
+@media (min-width: 768px) {
+  .fin-sheet {
+    left: auto; top: 0; bottom: 0; right: 0;
+    width: min(var(--panel-w), 92vw);
+    max-height: 100%;
+    border-radius: 0;
+    border-top: none;
+    border-left: var(--bw) solid var(--border);
+    box-shadow: var(--shadow-overlay);
+    animation-name: fin-slide-left;
+  }
+  .fin-sheet__grabber { display: none; }
+}
+
+/* La variante MODALE: finestra centrata, per i moduli brevi che non hanno un
+   elenco dietro da tenere visibile. */
+@media (min-width: 768px) {
+  .fin-sheet--dialog {
+    inset: 0;
+    margin: auto;
+    width: min(560px, 92vw);
+    height: max-content;
+    max-height: 86vh;
+    border: var(--bw) solid var(--border);
+    border-radius: var(--radius-card);
+    animation-name: fin-rise;
+  }
+}
+
+.fin-sheet__head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: var(--bw) solid var(--border);
+  min-height: var(--control-h-lg);
+  flex: 0 0 auto;
+}
+.fin-sheet__title {
+  font-size: var(--fs-h2);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--tracking-tight);
+}
+.fin-sheet__body { padding: var(--space-4); overflow-y: auto; flex: 1; }
+.fin-sheet__foot {
+  display: flex;
+  gap: var(--space-2);
+  justify-content: flex-end;
+  padding: var(--space-3) var(--space-4);
+  padding-bottom: calc(var(--space-3) + env(safe-area-inset-bottom));
+  border-top: var(--bw) solid var(--border);
+  background: var(--surface-2);
+  flex: 0 0 auto;
+}
+
+/* ── DataTable ─────────────────────────────────────────────────────────────── */
+/* Righe basse e costanti, fili sottili, numeri a destra. In una tabella
+   finanziaria l'allineamento vale piu' di qualsiasi decorazione. */
+
+.fin-table-wrap { overflow-x: auto; }
+.fin-table { width: 100%; border-collapse: collapse; font-size: var(--fs-body-sm); }
+.fin-table th {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+  text-align: left;
+  padding: var(--space-2) var(--space-3);
+  height: var(--control-h);
+  background: var(--surface-sunken);
+  border-bottom: var(--bw) solid var(--border-strong);
+  font-size: var(--fs-micro);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+.fin-table th[aria-sort] { cursor: pointer; user-select: none; }
+.fin-table th[aria-sort]:hover { color: var(--text); background: var(--surface-hover); }
+.fin-table th[aria-sort="ascending"], .fin-table th[aria-sort="descending"] { color: var(--text); }
+.fin-table td {
+  padding: var(--space-2) var(--space-3);
+  height: 44px;
+  border-bottom: var(--bw) solid var(--border);
+  color: var(--text);
+  vertical-align: middle;
+}
+.fin-table tbody tr { transition: background-color var(--dur-fast) var(--ease-out); }
+.fin-table tbody tr:hover { background: var(--surface-hover); }
+.fin-table tbody tr[aria-selected="true"] { background: var(--accent-soft); }
+.fin-table tbody tr:last-child td { border-bottom: none; }
+/* La riga scartata resta leggibile ma si tira indietro: barrarla la
+   renderebbe illeggibile, e va comunque riletta prima di confermare. */
+.fin-table__row--skipped td { opacity: .5; }
+
+.fin-table__num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* ── Skeleton ──────────────────────────────────────────────────────────────── */
+
+.fin-skeleton {
+  border-radius: var(--radius-control);
+  background: linear-gradient(
+    90deg,
+    var(--surface-sunken) 0%,
+    var(--surface-hover) 40%,
+    var(--surface-sunken) 80%
+  );
+  background-size: 200% 100%;
+  animation: fin-shimmer 1.4s linear infinite;
+}
+/* Senza movimento resta una barra ferma: comunica comunque "sto caricando". */
+@media (prefers-reduced-motion: reduce) {
+  .fin-skeleton { animation: none; background: var(--surface-sunken); }
+}
+
+/* ── stati vuoto ed errore ─────────────────────────────────────────────────── */
+
+.fin-state {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-3);
+  text-align: center;
+  padding: var(--space-10) var(--space-5);
+}
+.fin-state__icon {
+  display: grid; place-items: center;
+  width: 48px; height: 48px;
+  border: var(--bw) solid var(--border);
+  border-radius: var(--radius-card);
+  background: var(--surface-2);
+  color: var(--text-secondary);
+}
+.fin-state__title { font-size: var(--fs-h2); font-weight: var(--fw-semibold); letter-spacing: var(--tracking-tight); }
+.fin-state__body { font-size: var(--fs-body); color: var(--text-secondary); max-width: 48ch; }
+
+/* ── tipografia ────────────────────────────────────────────────────────────── */
+
+.fin-h1 { font-size: var(--fs-h1); font-weight: var(--fw-semibold); letter-spacing: var(--tracking-tight); line-height: var(--lh-tight); }
+.fin-h2 { font-size: var(--fs-h2); font-weight: var(--fw-semibold); letter-spacing: var(--tracking-tight); line-height: var(--lh-tight); }
+.fin-h3 { font-size: var(--fs-h3); font-weight: var(--fw-semibold); line-height: var(--lh-tight); }
+.fin-body { font-size: var(--fs-body); color: var(--text); }
+.fin-muted { font-size: var(--fs-body); color: var(--text-secondary); }
+.fin-caption { font-size: var(--fs-caption); color: var(--text-secondary); }
+.fin-eyebrow {
+  font-size: var(--fs-micro);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+/* ── impaginazione di pagina ───────────────────────────────────────────────── */
+/* Prima ogni schermata si costruiva l'intestazione a mano: un <h1>, un
+   pulsante spinto a destra con margin-left auto, e spaziature diverse in ogni
+   file. Ora e' una forma sola. */
+
+.fin-page { display: grid; gap: var(--space-5); align-content: start; }
+
+.fin-pagehead {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  padding-bottom: var(--space-4);
+  border-bottom: var(--bw) solid var(--border);
+}
+.fin-pagehead__text { min-width: 0; flex: 1 1 260px; }
+.fin-pagehead__sub { font-size: var(--fs-body); color: var(--text-secondary); margin-top: var(--space-1); max-width: 72ch; }
+.fin-pagehead__actions { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
+
+/* Il filo di briciole sopra il titolo, per le schermate di dettaglio. */
+.fin-crumb {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-medium);
+  color: var(--text-secondary);
+  text-decoration: none;
+  margin-bottom: var(--space-2);
+}
+.fin-crumb:hover { color: var(--accent); }
+
+/* Barra degli strumenti: filtri a sinistra, azioni a destra. */
+.fin-toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+.fin-toolbar__end { margin-left: auto; display: flex; align-items: center; gap: var(--space-2); }
+
+.fin-filterbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  padding: var(--space-3) var(--space-4);
+  border: var(--bw) solid var(--border);
+  border-radius: var(--radius-card);
+  background: var(--surface-2);
+}
+
+/* ── Stat ──────────────────────────────────────────────────────────────────── */
+/* La cifra con la sua etichetta. Era ridefinita in tre schermate con tre firme
+   diverse; qui e' una sola, e le cifre restano allineate fra riquadri. */
+
+.fin-statgrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  border: var(--bw) solid var(--border);
+  border-radius: var(--radius-card);
+  background: var(--surface-1);
+  overflow: hidden;
+}
+/* I riquadri sono divisi da fili, non da spazi: e' la forma di un prospetto. */
+.fin-stat {
+  padding: var(--space-3) var(--space-4);
+  border-left: var(--bw) solid var(--border);
+  border-top: var(--bw) solid var(--border);
+  min-width: 0;
+}
+.fin-stat:first-child { border-left: none; }
+.fin-statgrid > .fin-stat { border-top: none; }
+.fin-stat__label {
+  font-size: var(--fs-micro);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  display: block;
+  margin-bottom: var(--space-1);
+}
+.fin-stat__value {
+  font-size: var(--fs-amount-lg);
+  font-weight: var(--fw-semibold);
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.fin-stat__hint { font-size: var(--fs-caption); color: var(--text-secondary); display: block; margin-top: 2px; }
+
+/* Su schermo stretto la griglia diventa due colonne e i fili si ridisegnano
+   da soli grazie a `border-left` sul primo di ogni riga. */
+@media (max-width: 599px) {
+  .fin-statgrid { grid-template-columns: 1fr 1fr; }
+  .fin-stat:nth-child(odd) { border-left: none; }
+  .fin-statgrid > .fin-stat:nth-child(n + 3) { border-top: var(--bw) solid var(--border); }
+}
+
+/* ── area di caricamento ───────────────────────────────────────────────────── */
+/* Il tratteggio e' l'unica eccezione al bordo pieno di tutta l'app, e la merita:
+   dice "qui dentro ci si lascia cadere qualcosa" senza bisogno di spiegarlo. */
+
+.fin-dropzone {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  padding: var(--space-6) var(--space-4);
+  border: var(--bw) dashed var(--border-strong);
+  border-radius: var(--radius-card);
+  background: var(--surface-2);
+  color: var(--text-secondary);
+  text-align: center;
+  cursor: pointer;
+  font: inherit;
+  transition: border-color var(--dur-fast) var(--ease-out),
+              background-color var(--dur-fast) var(--ease-out);
+}
+.fin-dropzone:hover { border-color: var(--text-secondary); background: var(--surface-hover); }
+.fin-dropzone--on { border-color: var(--accent-fill); background: var(--accent-soft); }
+.fin-dropzone__title { font-size: var(--fs-h3); font-weight: var(--fw-semibold); color: var(--text); }
+
+/* Modulo "aggiungi un obiettivo": tre campi e un pulsante. Su desktop stanno
+   in riga con il pulsante allineato al fondo dei campi; sotto i 700 px vanno
+   in colonna, perche' tre campi da 60 px affiancati non si compilano. */
+.fin-target-form { display: grid; gap: var(--space-3); }
+@media (min-width: 700px) {
+  .fin-target-form {
+    grid-template-columns: 2fr 1fr 1fr auto;
+    align-items: end;
+  }
+}
+
+/* Coppie e terzine di campi. Affiancati solo dove c'e' spazio davvero: due
+   campi data da 130 px su un telefono non si compilano, e tre ancora meno. */
+.fin-pair, .fin-triple { display: grid; gap: var(--space-3); }
+@media (min-width: 560px) {
+  .fin-pair { grid-template-columns: 1fr 1fr; }
+}
+@media (min-width: 680px) {
+  .fin-triple { grid-template-columns: 1fr 1fr 1fr; }
+}
+
+/* Barra di conferma appiccicata in fondo alla revisione: con duecento righe,
+   dover risalire in cima per confermare sarebbe assurdo. */
+.fin-commitbar {
+  position: sticky;
+  bottom: 0;
+  z-index: var(--z-sticky);
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-3) 0;
+  padding-bottom: calc(var(--space-3) + env(safe-area-inset-bottom));
+  background: var(--surface-bg);
+  border-top: var(--bw) solid var(--border);
+}
+@media (max-width: 767px) {
+  /* Sopra la barra di navigazione, non sotto. */
+  .fin-commitbar { bottom: calc(var(--nav-h) + env(safe-area-inset-bottom)); }
+}
+
+/* ── menu a tendina ────────────────────────────────────────────────────────── */
+
+.fin-menu {
+  position: absolute;
+  z-index: var(--z-panel);
+  min-width: 200px;
+  padding: var(--space-1);
+  background: var(--surface-1);
+  border: var(--bw) solid var(--border-strong);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-overlay);
+  animation: fin-rise var(--dur-fast) var(--ease-out) both;
+}
+.fin-menu__item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  border: none;
+  border-radius: var(--radius-control);
+  background: none;
+  color: var(--text);
+  font: inherit;
+  font-size: var(--fs-body);
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+.fin-menu__item:hover { background: var(--surface-hover); }
+.fin-menu__sep { height: var(--bw); background: var(--border); margin: var(--space-1) 0; }
+
+/* ── guscio dell'app ───────────────────────────────────────────────────────── */
+/* Tre forme, una per fascia. Mobile: barra in basso e contenuto a tutta
+   larghezza. Tablet: barra laterale di sole icone. Desktop: barra laterale
+   intera e area di lavoro centrata, larga al massimo --content-max — oltre,
+   una riga di testo diventa troppo lunga da seguire con l'occhio. */
+
+.fin-shell { min-height: 100dvh; background: var(--surface-bg); }
+
+.fin-sidebar {
+  position: fixed;
+  top: 0; bottom: 0; left: 0;
+  z-index: var(--z-panel);
+  width: var(--sidebar-w);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: 0 0 var(--space-3);
+  background: var(--surface-1);
+  border-right: var(--bw) solid var(--border);
+  overflow-y: auto;
+}
+.fin-sidebar--compact { width: var(--sidebar-w-sm); align-items: center; }
+
+/* Il marchio sta in una fascia sua, chiusa da un filo: e' l'intestazione
+   dell'istituto, non una voce di menu. */
+.fin-sidebar__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: var(--header-h);
+  flex: 0 0 auto;
+  padding: 0 var(--space-4);
+  margin-bottom: var(--space-3);
+  border-bottom: var(--bw) solid var(--border);
+  text-decoration: none;
+  color: var(--text);
+}
+.fin-sidebar--compact .fin-sidebar__brand { padding: 0; justify-content: center; }
+.fin-sidebar__brandname {
+  font-size: var(--fs-h3);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--tracking-tight);
+}
+.fin-sidebar__pad { padding: 0 var(--space-3); }
+.fin-sidebar--compact .fin-sidebar__pad { padding: 0 var(--space-2); }
+
+.fin-sidebar__group { display: grid; gap: 1px; }
+.fin-sidebar__label {
+  padding: var(--space-4) var(--space-3) var(--space-1);
+  font-size: var(--fs-micro);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+
+/* La voce attiva: barra rossa piena a sinistra, fondo tenue, testo pieno.
+   E' il segnale di sezione piu' immediato che esista, e non dipende dal
+   colore da solo — la barra e' una forma. */
+.fin-navitem {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  height: var(--control-h);
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-control);
+  text-decoration: none;
+  color: var(--text-secondary);
+  font-size: var(--fs-body);
+  font-weight: var(--fw-medium);
+  white-space: nowrap;
+  transition: background-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+}
+.fin-navitem:hover { background: var(--surface-hover); color: var(--text); }
+.fin-navitem--on {
+  background: var(--accent-soft);
+  color: var(--text);
+  font-weight: var(--fw-semibold);
+}
+.fin-navitem--on::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: var(--bw-accent);
+  background: var(--accent-fill);
+  border-radius: var(--radius-control) 0 0 var(--radius-control);
+}
+.fin-sidebar--compact .fin-navitem {
+  justify-content: center;
+  width: var(--control-h);
+  height: var(--control-h);
+  padding: 0;
+}
+
+.fin-sidebar__foot { margin-top: auto; display: grid; gap: var(--space-1); padding-top: var(--space-4); }
+
+/* Selettore del profilo, in fondo alla barra laterale. */
+.fin-profile {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  padding: var(--space-2);
+  border: var(--bw) solid var(--border);
+  border-radius: var(--radius-control);
+  background: var(--surface-2);
+  color: var(--text);
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+  text-decoration: none;
+  transition: border-color var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out);
+}
+.fin-profile:hover { border-color: var(--border-strong); background: var(--surface-hover); }
+.fin-profile__name {
+  display: block;
+  font-size: var(--fs-body-sm);
+  font-weight: var(--fw-semibold);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.fin-profile__sub { display: block; font-size: var(--fs-micro); color: var(--text-secondary); }
+
+/* Area di lavoro. */
+.fin-main { min-width: 0; }
+.fin-main--sidebar { margin-left: var(--sidebar-w); }
+.fin-main--compact { margin-left: var(--sidebar-w-sm); }
+.fin-content {
+  width: 100%;
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding: var(--space-6);
+}
+@media (max-width: 767px) {
+  .fin-content {
+    padding: var(--space-4) var(--space-4)
+             calc(var(--nav-h) + var(--space-5) + env(safe-area-inset-bottom));
+  }
+}
+
+/* Barra in alto, solo su mobile: il titolo della sezione e i due comandi. */
+.fin-topbar {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: calc(var(--header-h) + env(safe-area-inset-top));
+  padding: 0 var(--space-4);
+  padding-top: env(safe-area-inset-top);
+  background: var(--surface-1);
+  border-bottom: var(--bw) solid var(--border);
+}
+
+/* Barra in basso, solo su mobile. La safe area sta DENTRO le voci: con
+   box-sizing border-box, metterla sulla barra le staccherebbe dal fondo. */
+.fin-tabbar {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  z-index: var(--z-panel);
+  display: flex;
+  background: var(--surface-1);
+  border-top: var(--bw) solid var(--border);
+  height: calc(var(--nav-h) + env(safe-area-inset-bottom));
+}
+.fin-tabbar__item {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding-bottom: env(safe-area-inset-bottom);
+  text-decoration: none;
+  border: none;
+  background: none;
+  font-family: inherit;
+  font-size: var(--fs-micro);
+  font-weight: var(--fw-medium);
+  color: var(--text-secondary);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+/* Come nella barra laterale: una barra piena segna la sezione, qui in alto. */
+.fin-tabbar__item--on { color: var(--accent); font-weight: var(--fw-semibold); }
+.fin-tabbar__item--on::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: var(--bw-accent);
+  background: var(--accent-fill);
+}
+
+/* ── palette dei comandi ───────────────────────────────────────────────────── */
+
+.fin-palette {
+  position: fixed;
+  top: 12vh; left: 50%;
+  transform: translateX(-50%);
+  z-index: calc(var(--z-overlay) + 1);
+  width: min(600px, 92vw);
+  max-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface-1);
+  border: var(--bw) solid var(--border-strong);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-overlay);
+  overflow: hidden;
+  animation: fin-rise var(--dur-fast) var(--ease-out) both;
+}
+.fin-palette__input {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: var(--bw) solid var(--border);
+  color: var(--text-secondary);
+}
+.fin-palette__input input {
+  flex: 1;
+  border: none;
+  background: none;
+  outline: none;
+  color: var(--text);
+  font-size: var(--fs-h3);
+}
+.fin-palette__results { overflow-y: auto; padding: var(--space-1); }
+.fin-palette__empty { padding: var(--space-8); text-align: center; color: var(--text-secondary); font-size: var(--fs-body); }
+
+/* Fila di azioni rapide. Su schermo stretto scorre di lato DENTRO il proprio
+   contenitore invece di andare a capo. */
+.fin-quickrow {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(132px, 1fr);
+  gap: var(--space-3);
+  overflow-x: auto;
+  scrollbar-width: none;
+  scroll-snap-type: x proximity;
+}
+.fin-quickrow::-webkit-scrollbar { display: none; }
+.fin-quickrow > * { scroll-snap-align: start; }
+
+/* ── Home ──────────────────────────────────────────────────────────────────── */
+/* Una colonna sul telefono, due su desktop. La colonna larga tiene le cose che
+   si leggono (movimenti, spese), quella stretta i riepiloghi: un elenco di
+   movimenti in una colonna da 380 px diventa illeggibile. */
+.fin-home { display: grid; gap: var(--space-5); align-items: start; }
+@media (min-width: 1200px) {
+  .fin-home { grid-template-columns: minmax(0, 1.7fr) minmax(320px, 1fr); }
+  .fin-home__wide { grid-column: 1 / -1; }
+}
+
+/* Striscia dei conti: scorre di lato su mobile, si dispone in griglia sopra. */
+.fin-accounts {
+  display: flex;
+  gap: var(--space-3);
+  overflow-x: auto;
+  scrollbar-width: none;
+  scroll-snap-type: x mandatory;
+  padding-bottom: var(--space-1);
+}
+.fin-accounts::-webkit-scrollbar { display: none; }
+.fin-accounts > * { scroll-snap-align: start; flex: 0 0 210px; }
+@media (min-width: 768px) {
+  .fin-accounts { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); overflow: visible; }
+  .fin-accounts > * { flex: initial; }
+}
+
+/* Barra orizzontale di una categoria nel riepilogo delle spese. Rettangolare:
+   una barra a estremi tondi falsa la lettura delle lunghezze corte. */
+.fin-bar {
+  height: 6px;
+  background: var(--surface-sunken);
+  overflow: hidden;
+}
+.fin-bar__fill { height: 100%; }

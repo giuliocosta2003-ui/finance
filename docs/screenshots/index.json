@@ -1,0 +1,74 @@
+[
+  {
+    "page": "review",
+    "theme": "dark",
+    "width": "390",
+    "file": "docs/screenshots/review-dark-390.png",
+    "overflowX": false,
+    "scrollWidth": 390,
+    "clientWidth": 390
+  },
+  {
+    "page": "review",
+    "theme": "light",
+    "width": "390",
+    "file": "docs/screenshots/review-light-390.png",
+    "overflowX": false,
+    "scrollWidth": 390,
+    "clientWidth": 390
+  },
+  {
+    "page": "review",
+    "theme": "dark",
+    "width": "768",
+    "file": "docs/screenshots/review-dark-768.png",
+    "overflowX": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "page": "review",
+    "theme": "light",
+    "width": "768",
+    "file": "docs/screenshots/review-light-768.png",
+    "overflowX": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "page": "review",
+    "theme": "dark",
+    "width": "1280",
+    "file": "docs/screenshots/review-dark-1280.png",
+    "overflowX": false,
+    "scrollWidth": 1280,
+    "clientWidth": 1280
+  },
+  {
+    "page": "review",
+    "theme": "light",
+    "width": "1280",
+    "file": "docs/screenshots/review-light-1280.png",
+    "overflowX": false,
+    "scrollWidth": 1280,
+    "clientWidth": 1280
+  },
+  {
+    "page": "review",
+    "theme": "dark",
+    "width": "1440",
+    "file": "docs/screenshots/review-dark-1440.png",
+    "overflowX": false,
+    "scrollWidth": 1440,
+    "clientWidth": 1440
+  },
+  {
+    "page": "review",
+    "theme": "light",
+    "width": "1440",
+    "file": "docs/screenshots/review-light-1440.png",
+    "overflowX": false,
+    "scrollWidth": 1440,
+    "clientWidth": 1440
+  }
+]

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="finance-app">
+  <rect width="512" height="512" rx="113" fill="#111111"/>
+  <rect x="78"  y="273" width="88" height="148" rx="25" fill="#888888"/>
+  <rect x="212" y="171" width="88" height="250" rx="25" fill="#cccccc"/>
+  <rect x="346" y="68"  width="88" height="353" rx="25" fill="#6fcf97"/>
+</svg>

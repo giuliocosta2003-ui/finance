@@ -1,0 +1,20 @@
+node_modules
+dist
+dist-ssr
+.env
+.env.local
+.env.*.local
+*.local
+.DS_Store
+.vite
+dev-dist
+*.log
+npm-debug.log*
+
+# Estratti conto veri per le prove: non entrano mai nel repository.
+fixtures/private/
+# Le fixture sintetiche si rigenerano con `npm run fixtures`.
+fixtures/synthetic/
+
+# Stato locale della CLI Supabase (collegamento al progetto): non nel repo.
+supabase/.temp/

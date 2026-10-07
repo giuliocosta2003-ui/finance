@@ -1,0 +1,12 @@
+-- phase4_transaction_kind
+-- Un movimento puo' essere anche l'acquisto o la vendita di un investimento.
+--
+-- Perche' serve: se compri un ETF con i soldi del conto corrente, quel
+-- movimento sposta soldi ma non e' una spesa. Contarlo fra le uscite farebbe
+-- sembrare che quel mese hai speso 5.000 euro, e falserebbe ogni statistica
+-- costruita sopra. Come i trasferimenti, resta fuori da entrate e uscite.
+--
+-- Perche' in una migrazione da solo: PostgreSQL rifiuta di USARE un valore di
+-- enum nella stessa transazione in cui lo si aggiunge, e la migrazione
+-- successiva lo usa subito in un CHECK. Due migrazioni, due transazioni.
+alter type public.transaction_kind add value if not exists 'investment';

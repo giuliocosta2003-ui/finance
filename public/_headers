@@ -1,0 +1,28 @@
+# Header di sicurezza serviti da Cloudflare Pages (fase 6, punto 6).
+#
+# La CSP e' stretta perche' l'app puo' permetterselo: nessuno script, font o
+# stile arriva da terzi (Inter e' self-hosted, i bundle sono nostri), e l'unica
+# destinazione di rete a runtime e' il progetto Supabase, in https e in wss
+# (Realtime). Se un giorno si aggiunge un servizio esterno, va aggiunto qui in
+# connect-src, altrimenti il browser lo blocca.
+#
+#   'unsafe-inline' in style-src: l'app usa attributi style inline ovunque;
+#     riguarda solo gli stili, non gli script, ed e' un rischio basso.
+#   'wasm-unsafe-eval' in script-src: pdf.js puo' usare WebAssembly per leggere
+#     certe scansioni; consente solo la compilazione WASM, non eval arbitrario.
+#   blob: in worker-src e img-src: il worker di pdf.js e le anteprime immagine
+#     (conversione HEIC) nascono da blob.
+/*
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Content-Type-Options: nosniff
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), interest-cohort=()
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' https://dmnaxnvxxbqcibefirja.supabase.co wss://dmnaxnvxxbqcibefirja.supabase.co; worker-src 'self' blob:; manifest-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'; upgrade-insecure-requests
+
+# Il service worker e il manifest NON vanno messi in cache a lungo: sono il
+# meccanismo con cui l'app si aggiorna, e una copia vecchia bloccherebbe gli
+# aggiornamenti. Gli asset con hash nel nome restano invece cache-abili a lungo.
+/sw.js
+  Cache-Control: no-cache
+/manifest.webmanifest
+  Cache-Control: no-cache
